@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fd6c9e" />
+      <stop offset="50%" stop-color="#f43f5e" />
+      <stop offset="100%" stop-color="#be123c" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="50%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#b45309" />
+    </linearGradient>
+    <linearGradient id="pageGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f8fafc" />
+      <stop offset="100%" stop-color="#e2e8f0" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#881337" flood-opacity="0.38" />
+    </filter>
+    <filter id="innerGlow">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in2="SourceAlpha" operator="arithmetic" k2="-1" k3="1" result="shadowDiff" />
+      <feFlood flood-color="#ffffff" flood-opacity="0.25" />
+      <feComposite in2="shadowDiff" operator="in" />
+      <feComposite in2="SourceGraphic" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Base Rounded Background -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+
+  <!-- Outer Elegant Gold Border -->
+  <rect x="20" y="20" width="472" height="472" rx="96" fill="none" stroke="url(#goldGrad)" stroke-width="6" opacity="0.45" stroke-dasharray="14 10" />
+
+  <!-- Journal Book Illustration with Shadow -->
+  <g filter="url(#shadow)">
+    <!-- Book Back Cover -->
+    <rect x="110" y="96" width="292" height="320" rx="22" fill="#881337" opacity="0.6" />
+    
+    <!-- Book Pages Edge -->
+    <path d="M125 108 h265 a10 10 0 0 1 10 10 v276 a10 10 0 0 1 -10 10 h-265 z" fill="url(#pageGrad)" />
+    
+    <!-- Main Book Cover -->
+    <rect x="100" y="96" width="280" height="320" rx="20" fill="url(#bgGrad)" stroke="url(#goldGrad)" stroke-width="5" />
+    
+    <!-- Book Spine Ribs -->
+    <line x1="138" y1="96" x2="138" y2="416" stroke="#9f1239" stroke-width="4" />
+    <line x1="144" y1="96" x2="144" y2="416" stroke="url(#goldGrad)" stroke-width="2" opacity="0.8" />
+
+    <!-- Golden Bookmark Ribbon Hanging Out -->
+    <path d="M285 96 v120 l22 -16 l22 16 v-120 z" fill="url(#goldGrad)" filter="url(#shadow)" />
+
+    <!-- Embossed Frame on Cover -->
+    <rect x="165" y="148" width="180" height="216" rx="14" fill="#ffffff" fill-opacity="0.12" stroke="url(#goldGrad)" stroke-width="3" />
+
+    <!-- Center Monogram / Heart & Feather Quill Motif -->
+    <!-- Heart Motif -->
+    <path d="M255 240 C255 220 230 205 210 225 C190 245 225 280 255 305 C285 280 320 245 300 225 C280 205 255 220 255 240 Z" fill="url(#goldGrad)" />
+    
+    <!-- Quill Pen Symbol -->
+    <path d="M298 175 C295 195 280 220 262 235 C270 215 280 195 298 175 Z" fill="#ffffff" opacity="0.9" />
+    <line x1="262" y1="235" x2="242" y2="255" stroke="url(#goldGrad)" stroke-width="3" stroke-linecap="round" />
+  </g>
+
+  <!-- Magic Sparkles -->
+  <!-- Top Right Sparkle -->
+  <path d="M395 125 Q405 140 420 145 Q405 150 395 165 Q385 150 370 145 Q385 140 395 125 Z" fill="url(#goldGrad)" />
+  <!-- Bottom Left Sparkle -->
+  <path d="M105 385 Q113 397 125 401 Q113 405 105 417 Q97 405 85 401 Q97 397 105 385 Z" fill="url(#goldGrad)" />
+  <!-- Small Star Sparkle -->
+  <circle cx="390" cy="220" r="4" fill="#fef08a" />
+  <circle cx="120" cy="180" r="5" fill="#fef08a" />
+  <circle cx="365" cy="380" r="4" fill="#fef08a" />
+</svg>

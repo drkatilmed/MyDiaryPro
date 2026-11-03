@@ -6,6 +6,7 @@
  */
 
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import { usePWAInstall } from './usePWAInstall';
 
 // ==========================================
 // 1. DATA & CONSTANTS
@@ -121,6 +122,18 @@ interface TranslationSet {
   themeBtn: string;
   themeModalTitle: string;
   themeSubtitle: string;
+  apkHubBtn: string;
+  apkModalTitle: string;
+  apkModalSubtitle: string;
+  apkDirectInstall: string;
+  apkDirectInstallDesc: string;
+  apkInstallNow: string;
+  apkAlreadyInstalled: string;
+  apkGenerateHeader: string;
+  apkGenerateDesc: string;
+  apkOpenPwbuilder: string;
+  apkCopyUrl: string;
+  apkUrlCopied: string;
 }
 
 const TRANSLATIONS: Record<Language, TranslationSet> = {
@@ -244,6 +257,18 @@ const TRANSLATIONS: Record<Language, TranslationSet> = {
     themeBtn: 'Themes (5)',
     themeModalTitle: '5 App Theme Colors',
     themeSubtitle: 'Personalize your diary atmosphere with 5 handcrafted palettes.',
+    apkHubBtn: 'APK / Install',
+    apkModalTitle: 'Android APK & Installation Hub',
+    apkModalSubtitle: 'Install directly as a native Android app or generate an official .apk / .aab package.',
+    apkDirectInstall: 'Direct WebAPK Install',
+    apkDirectInstallDesc: 'Install directly to your Android device with a native home icon, splash screen, and fullscreen display.',
+    apkInstallNow: 'Install App Now',
+    apkAlreadyInstalled: 'Already installed in standalone mode',
+    apkGenerateHeader: 'Generate Standalone .APK File',
+    apkGenerateDesc: 'Use official PWABuilder (Microsoft/Google) to convert this PWA into a signed Android APK package in 1 click.',
+    apkOpenPwbuilder: 'Open PWABuilder (Generate .APK)',
+    apkCopyUrl: 'Copy App URL',
+    apkUrlCopied: 'App URL copied to clipboard!',
   },
   ms: {
     brandTitle: 'MyDiary',
@@ -365,6 +390,18 @@ const TRANSLATIONS: Record<Language, TranslationSet> = {
     themeBtn: 'Tema (5)',
     themeModalTitle: '5 Pilihan Tema Warna',
     themeSubtitle: 'Peribadikan suasana diari anda dengan 5 palet warna eksklusif.',
+    apkHubBtn: 'APK / Pasang',
+    apkModalTitle: 'Pusat APK Android & Pemasangan',
+    apkModalSubtitle: 'Pasang terus sebagai aplikasi Android (WebAPK) atau jana fail .apk / .aab rasmi.',
+    apkDirectInstall: 'Pasang WebAPK Terus',
+    apkDirectInstallDesc: 'Pasang terus ke telefon Android anda dengan ikon aplikasi, skrin pembuka (splash), dan paparan skrin penuh tanpa bar penyemak imbas.',
+    apkInstallNow: 'Pasang Aplikasi Sekarang',
+    apkAlreadyInstalled: 'Aplikasi sudah dipasang dalam mod skrin penuh',
+    apkGenerateHeader: 'Jana Fail .APK Sendiri',
+    apkGenerateDesc: 'Gunakan PWABuilder rasmi (Microsoft/Google) untuk menukar aplikasi PWA ini menjadi fail APK Android siap dipasang (sideload) atau diterbitkan ke Google Play Store.',
+    apkOpenPwbuilder: 'Buka PWABuilder (Jana Fail .APK)',
+    apkCopyUrl: 'Salin Pautan Aplikasi',
+    apkUrlCopied: 'Pautan aplikasi berjaya disalin!',
   },
 };
 
@@ -872,6 +909,10 @@ export default function App() {
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
 
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState<boolean>(false);
+  const [isApkModalOpen, setIsApkModalOpen] = useState<boolean>(false);
+
+  // PWA & Android APK Installation Hook
+  const pwa = usePWAInstall();
 
   // 5 Theme Colors State
   const [currentTheme, setCurrentTheme] = useState<AppTheme>(() => {
@@ -900,6 +941,7 @@ export default function App() {
   const isReminderModalOpenRef = useRef(isReminderModalOpen);
   const isCalendarModalOpenRef = useRef(isCalendarModalOpen);
   const isCameraModalOpenRef = useRef(isCameraModalOpen);
+  const isApkModalOpenRef = useRef(isApkModalOpen);
   const filteredDateRef = useRef(filteredDate);
   const langRef = useRef(lang);
   const isAudioRecordingRef = useRef<boolean>(false);
@@ -911,6 +953,7 @@ export default function App() {
   useEffect(() => { isReminderModalOpenRef.current = isReminderModalOpen; }, [isReminderModalOpen]);
   useEffect(() => { isCalendarModalOpenRef.current = isCalendarModalOpen; }, [isCalendarModalOpen]);
   useEffect(() => { isCameraModalOpenRef.current = isCameraModalOpen; }, [isCameraModalOpen]);
+  useEffect(() => { isApkModalOpenRef.current = isApkModalOpen; }, [isApkModalOpen]);
   useEffect(() => { filteredDateRef.current = filteredDate; }, [filteredDate]);
   useEffect(() => { langRef.current = lang; }, [lang]);
   useEffect(() => { isAudioRecordingRef.current = isAudioRecording; }, [isAudioRecording]);
@@ -1851,6 +1894,11 @@ END:VCALENDAR`;
       setIsCalendarModalOpen(false);
       return true;
     }
+    // 5b. If APK Modal is open, close it
+    if (isApkModalOpenRef.current) {
+      setIsApkModalOpen(false);
+      return true;
+    }
     // 6. If Camera Modal is open, stop camera and close
     if (isCameraModalOpenRef.current) {
       stopCamera();
@@ -2545,6 +2593,17 @@ END:VCALENDAR`;
               onClick={() => openModal('calendar', () => setIsCalendarModalOpen(true))}
             >
               <i className="fa-regular fa-calendar-check" style={{ color: '#4285f4' }} /> {t.calendarSyncBtn}
+            </button>
+
+            {/* Android APK & Install Hub Button */}
+            <button
+              type="button"
+              className="action-btn-header"
+              style={{ borderColor: '#10b981', color: '#10b981', fontWeight: 800 }}
+              title={t.apkHubBtn}
+              onClick={() => openModal('apk', () => setIsApkModalOpen(true))}
+            >
+              <i className="fa-brands fa-android" /> {t.apkHubBtn}
             </button>
 
             {/* 5 Theme Colors Quick Dots & Modal Launcher */}
@@ -3762,6 +3821,158 @@ END:VCALENDAR`;
                 <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
                   {lang === 'ms' ? 'Eksport catatan yang sedang ditulis di borang.' : 'Exports the note currently being composed in editor.'}
                 </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ANDROID APK & INSTALLATION HUB MODAL */}
+      {isApkModalOpen && (
+        <div className="modal-backdrop" onClick={() => setIsApkModalOpen(false)}>
+          <div className="modal-box" style={{ maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.85rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.55rem' }}>
+                <div style={{ width: '38px', height: '38px', borderRadius: '10px', background: '#ecfdf5', color: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.25rem', flexShrink: 0, border: '1px solid #a7f3d0' }}>
+                  <i className="fa-brands fa-android" />
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-main)' }}>{t.apkModalTitle}</h3>
+                  <p style={{ margin: 0, fontSize: '0.72rem', color: 'var(--text-muted)' }}>{t.apkModalSubtitle}</p>
+                </div>
+              </div>
+              <button type="button" className="modal-close-btn" onClick={() => setIsApkModalOpen(false)}>
+                <i className="fa-solid fa-xmark" />
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              {/* Option 1: Direct WebAPK Install on Android */}
+              <div style={{ background: 'var(--bg-canvas)', border: '1.5px solid #10b981', borderRadius: 'var(--radius-md)', padding: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.35rem' }}>
+                  <span style={{ fontWeight: 800, fontSize: '0.88rem', color: '#059669', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <i className="fa-solid fa-bolt" /> {t.apkDirectInstall}
+                  </span>
+                  <span style={{ fontSize: '0.65rem', background: '#ecfdf5', color: '#047857', padding: '2px 8px', borderRadius: '999px', fontWeight: 700, border: '1px solid #a7f3d0' }}>
+                    ⭐ {lang === 'ms' ? 'Disyorkan • Pasang 1-Klik' : 'Recommended • 1-Click'}
+                  </span>
+                </div>
+                <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.45 }}>
+                  {t.apkDirectInstallDesc}
+                </p>
+
+                {pwa.isInstalled ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 12px', background: '#ecfdf5', border: '1px solid #a7f3d0', borderRadius: '8px', color: '#065f46', fontSize: '0.76rem', fontWeight: 700 }}>
+                    <i className="fa-solid fa-circle-check" style={{ color: '#10b981' }} />
+                    <span>{t.apkAlreadyInstalled}</span>
+                  </div>
+                ) : pwa.isInstallable ? (
+                  <button
+                    type="button"
+                    className="btn-submit-primary"
+                    style={{ background: '#10b981', borderColor: '#059669', color: '#ffffff', fontWeight: 800, padding: '0.6rem 1rem', fontSize: '0.84rem' }}
+                    onClick={async () => {
+                      const res = await pwa.install();
+                      if (res) {
+                        showToast(lang === 'ms' ? 'Pemasangan MyDiary bermula!' : 'MyDiary install started!');
+                        setIsApkModalOpen(false);
+                      }
+                    }}
+                  >
+                    <i className="fa-brands fa-android" /> {t.apkInstallNow}
+                  </button>
+                ) : pwa.isIOS ? (
+                  <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)', background: 'var(--bg-panel)', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                    <strong>iOS (iPhone/iPad):</strong> {lang === 'ms' ? 'Tekan butang Kongsi (Share) di Safari -> "Add to Home Screen".' : 'Tap the Share icon in Safari toolbar -> "Add to Home Screen".'}
+                  </div>
+                ) : (
+                  <div style={{ fontSize: '0.73rem', color: 'var(--text-muted)', background: 'var(--bg-panel)', padding: '8px 12px', borderRadius: '8px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <i className="fa-solid fa-mobile-screen-button" style={{ color: '#10b981', fontSize: '0.9rem' }} />
+                    <span>{lang === 'ms' ? 'Buka di Chrome telefon anda, tekan menu (⋮) -> pilih "Pasang aplikasi" / "Add to Home screen".' : 'Open in phone Chrome, tap menu (⋮) -> select "Install app" / "Add to Home screen".'}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Option 2: Generate Standalone .APK File via PWABuilder */}
+              <div style={{ background: 'var(--bg-canvas)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', padding: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.35rem' }}>
+                  <span style={{ fontWeight: 800, fontSize: '0.88rem', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <i className="fa-solid fa-cube" style={{ color: '#6366f1' }} /> {t.apkGenerateHeader}
+                  </span>
+                  <span style={{ fontSize: '0.65rem', background: '#e0e7ff', color: '#4338ca', padding: '2px 8px', borderRadius: '999px', fontWeight: 700 }}>
+                    Official PWABuilder (Google Play / Sideload)
+                  </span>
+                </div>
+
+                <p style={{ fontSize: '0.74rem', color: 'var(--text-muted)', margin: 0, lineHeight: 1.45 }}>
+                  {t.apkGenerateDesc}
+                </p>
+
+                {/* App URL and Copy Button */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', background: 'var(--bg-panel)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0.4rem 0.65rem' }}>
+                  <span style={{ flex: 1, fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-main)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {typeof window !== 'undefined' ? window.location.origin : 'https://ais-pre-wcmgs2mxf4tgmajaxe35ro-348539899164.asia-east1.run.app'}
+                  </span>
+                  <button
+                    type="button"
+                    className="media-pill-btn"
+                    style={{ minHeight: '28px', padding: '0.15rem 0.55rem', fontSize: '0.68rem', borderRadius: 'var(--radius-sm)' }}
+                    onClick={() => {
+                      const url = typeof window !== 'undefined' ? window.location.origin : '';
+                      navigator.clipboard?.writeText(url);
+                      showToast(t.apkUrlCopied);
+                    }}
+                  >
+                    <i className="fa-regular fa-copy" /> {t.apkCopyUrl}
+                  </button>
+                </div>
+
+                {/* Direct Link to PWABuilder */}
+                <a
+                  href={`https://www.pwabuilder.com/?url=${encodeURIComponent(typeof window !== 'undefined' ? window.location.origin : '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-submit-primary"
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: '#6366f1', borderColor: '#4f46e5', color: '#ffffff', textDecoration: 'none', fontWeight: 800, padding: '0.55rem 1rem', fontSize: '0.82rem' }}
+                >
+                  <i className="fa-solid fa-arrow-up-right-from-square" /> {t.apkOpenPwbuilder}
+                </a>
+
+                {/* Simple 3 Step Guide */}
+                <div style={{ fontSize: '0.71rem', color: 'var(--text-muted)', lineHeight: 1.45, background: 'var(--bg-panel)', padding: '0.6rem 0.75rem', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                  <strong style={{ color: 'var(--text-main)' }}>{lang === 'ms' ? 'Langkah Menjana Fail .APK di PWABuilder:' : 'Steps to Generate .APK on PWABuilder:'}</strong>
+                  <ol style={{ paddingLeft: '1.1rem', marginTop: '4px', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    <li>{lang === 'ms' ? 'Klik butang di atas (PWABuilder akan menyemak aplikasi ini secara automatik).' : 'Click the button above (PWABuilder will automatically test this app).'}</li>
+                    <li>{lang === 'ms' ? 'Semua keperluan PWA (Manifest, Service Worker, Ikon Android Maskable) telah 100% lulus.' : 'All PWA requirements (Manifest, Service Worker, Android Maskable Icons) pass 100%.'}</li>
+                    <li>{lang === 'ms' ? 'Klik "Package for Android" dan muat turun fail .apk sedia pasang.' : 'Click "Package for Android" and download the installable .apk file.'}</li>
+                  </ol>
+                </div>
+              </div>
+
+              {/* Ready Features Checklist */}
+              <div style={{ background: 'var(--bg-panel)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)', padding: '0.65rem 0.85rem' }}>
+                <span style={{ fontSize: '0.73rem', fontWeight: 800, color: 'var(--text-main)', display: 'block', marginBottom: '0.35rem' }}>
+                  {lang === 'ms' ? 'Ciri-Ciri APK MyDiary yang Telah Diaktifkan:' : 'Activated MyDiary APK Features:'}
+                </span>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.35rem', fontSize: '0.68rem', color: 'var(--text-muted)' }}>
+                  <div><i className="fa-solid fa-check" style={{ color: '#10b981' }} /> Web App Manifest</div>
+                  <div><i className="fa-solid fa-check" style={{ color: '#10b981' }} /> Service Worker Offline</div>
+                  <div><i className="fa-solid fa-check" style={{ color: '#10b981' }} /> Maskable Icons (Android)</div>
+                  <div><i className="fa-solid fa-check" style={{ color: '#10b981' }} /> Android Back Gesture</div>
+                  <div><i className="fa-solid fa-check" style={{ color: '#10b981' }} /> IndexedDB Media Storage</div>
+                  <div><i className="fa-solid fa-check" style={{ color: '#10b981' }} /> Standalone Fullscreen</div>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                className="btn-submit-primary"
+                style={{ padding: '0.45rem 1.25rem', fontSize: '0.8rem', minHeight: '36px' }}
+                onClick={() => setIsApkModalOpen(false)}
+              >
+                {lang === 'ms' ? 'Tutup' : 'Close'}
               </button>
             </div>
           </div>
