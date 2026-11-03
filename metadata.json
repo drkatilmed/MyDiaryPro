@@ -1,0 +1,12 @@
+{
+  "name": "MyDiary - Personal Memory & Life Archive",
+  "description": "Personal memory, daily journaling and life archive app with custom daily reminder notifications, device calendar sync (.ics), cloud backup, A4 PDF studio, and bilingual support (English & Bahasa Melayu).",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
